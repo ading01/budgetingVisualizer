@@ -72,6 +72,29 @@
 					</excludes>
 				</configuration>
 			</plugin>
+			<plugin>
+            <artifactId>maven-resources-plugin</artifactId>
+            <version>3.2.0</version>
+            <executions>
+                <execution>
+                    <id>copy-react-build</id>
+                    <phase>prepare-package</phase>
+                    <goals>
+                        <goal>copy-resources</goal>
+                    </goals>
+                    <configuration>
+                        <overwrite>true</overwrite>
+                        <outputDirectory>${project.build.directory}/classes/static</outputDirectory>
+                        <resources>
+                            <resource>
+                                <directory>${project.basedir}/frontend/build</directory>
+                                <filtering>false</filtering>
+                            </resource>
+                        </resources>
+                    </configuration>
+                </execution>
+            </executions>
+        </plugin>
 		</plugins>
 	</build>
 
