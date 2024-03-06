@@ -1,32 +1,48 @@
 package com.rungroup.demo.controllers;
 
-import com.rungroup.demo.dtos.UserDTO;
-import com.rungroup.demo.dtos.UserTransactionDTO;
-import com.rungroup.demo.models.Transaction;
+import com.rungroup.demo.dtos.IncomeDTO;
 import com.rungroup.demo.models.User;
+import com.rungroup.demo.services.impls.TransactionService;
 import com.rungroup.demo.services.impls.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/users")
 public class UserController {
 
+    private final UserService userService;
+    private final TransactionService transactionService;
+
+
     @Autowired
-    private UserService userService;
-
-//    @PostMapping("/test")
-//    public ResponseEntity<User> createUserWithTransaction(@RequestBody UserTransactionDTO dto) {
-//        User user = new User(null, dto.getName(), dto.getEmail(), dto.getPassword(), null);
-//        Transaction transaction = new Transaction(null, null, dto.getAmount(), dto.getType());
-//        User savedUser = userService.createUserWithTransaction(user, transaction);
-//        return ResponseEntity.ok(savedUser);
-//    }
-
-    @PostMapping("/simpleUser")
-    public ResponseEntity<User> createUser(@RequestBody UserDTO userDTO) {
-        User newUser = userService.createUser(userDTO);
-        return ResponseEntity.ok(newUser);
+    public UserController(UserService userService, TransactionService transactionService) {
+        this.userService = userService;
+        this.transactionService = transactionService;
     }
+
+    @PostMapping
+    public ResponseEntity<User> createUser(@RequestBody User user) {
+        User createdUser = userService.createUser(user);
+        return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
+        userService.deleteUserById(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{userId}/incomes")
+    public ResponseEntity<List<IncomeDTO>> getIncomesForUser(@PathVariable Long userId) {
+        List<IncomeDTO> incomeDTOs = transactionService.getIncomesForUser(userId);
+        return ResponseEntity.ok(incomeDTOs);
+    }
+
+
 }
+
