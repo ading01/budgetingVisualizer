@@ -31,17 +31,32 @@ public class UserController {
         return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
-        userService.deleteUserById(id);
-        return ResponseEntity.noContent().build();
+    @GetMapping("/id")
+    public ResponseEntity<Long> getUserIdByEmail(@RequestParam String email) {
+        Long userId = userService.getUserIdByEmail(email);
+        if (userId != null) {
+            return ResponseEntity.ok(userId);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
-    @GetMapping("/{userId}/incomes")
-    public ResponseEntity<List<IncomeDTO>> getIncomesForUser(@PathVariable Long userId) {
-        List<IncomeDTO> incomeDTOs = transactionService.getIncomesForUser(userId);
-        return ResponseEntity.ok(incomeDTOs);
-    }
+
+
+
+
+//
+//    @DeleteMapping("/{id}")
+//    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
+//        userService.deleteUserById(id);
+//        return ResponseEntity.noContent().build();
+//    }
+//
+//    @GetMapping("/{userId}/incomes")
+//    public ResponseEntity<List<IncomeDTO>> getIncomesForUser(@PathVariable Long userId) {
+//        List<IncomeDTO> incomeDTOs = transactionService.getIncomesForUser(userId);
+//        return ResponseEntity.ok(incomeDTOs);
+//    }
 
 
 }

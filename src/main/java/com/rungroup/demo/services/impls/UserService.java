@@ -20,6 +20,13 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public Long getUserIdByEmail(String email) {
+        User user = userRepository.findByEmail(email);
+        return user != null ? user.getId() : null;
+    }
+
+
+
     public void deleteUserById(Long id) {
         userRepository.deleteById(id);
     }

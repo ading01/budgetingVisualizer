@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.HashSet;
 import java.util.Set;
 
 
@@ -28,10 +27,7 @@ public class User {
 
     // Assuming lazy loading for relationships
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<Income> incomes;
-
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<Expense> expenses;
+    private Set<Transaction> transactions;
 
     // Constructors, getters, and setters...
 }
