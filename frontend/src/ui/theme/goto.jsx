@@ -35,6 +35,10 @@ export const lightTheme = {
     paragraph: "#000000",
     third: "#bebebe",
   },
+  textColors: {
+    primary: "#000000",
+    secondary: "#6b6b6b",
+  },
   hover_color: "#007bff",
   iconSize: "2rem",
   toggleButton: {

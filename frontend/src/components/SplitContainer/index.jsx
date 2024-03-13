@@ -29,16 +29,16 @@ const StickyContainer = styled.div`
 function SplitContainer({ section_name, resume_content }) {
   return (
     <ResumeCardContainer>
-      <ResumeCardRow>
-        <LeftColumn>
-          <StickyContainer>
-            <FadeInSection>
+      <FadeInSection>
+        <ResumeCardRow>
+          <LeftColumn>
+            <StickyContainer>
               <ResumeCardTitle>{section_name}</ResumeCardTitle>
-            </FadeInSection>
-          </StickyContainer>
-        </LeftColumn>
-        <RightColumn>{resume_content}</RightColumn>
-      </ResumeCardRow>
+            </StickyContainer>
+          </LeftColumn>
+          <RightColumn>{resume_content}</RightColumn>
+        </ResumeCardRow>
+      </FadeInSection>
     </ResumeCardContainer>
   );
 }

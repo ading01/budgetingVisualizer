@@ -9,6 +9,7 @@ Spring Demo/*
 mvnw.cmd
 mvnw
 src/main/resources/application.properties
+*/env/*
 
 
 ### STS ###
