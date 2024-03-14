@@ -6,6 +6,8 @@ import { GridExample } from "../../components/Table";
 import { Input, InputLabel } from "../../ui/input";
 import { Button } from "../../ui/button";
 import HorizontalInput from "../../components/Input/HorizontalInput";
+import { useTransactions } from "../../contexts/TransactionsContext";
+
 // import {Column}
 
 const HomeContainer = styled.div`
@@ -14,6 +16,8 @@ const HomeContainer = styled.div`
 `;
 
 function Home() {
+  const { transactions, isLoading, error } = useTransactions();
+
   return (
     <HomeContainer>
       <SectionContainer sectionNameId="inputs">
@@ -27,6 +31,20 @@ function Home() {
           section_name="Skills"
           resume_content={<GridExample />}
         />
+        {isLoading && <div>Loading...</div>}
+        {error && <div>Error: {error}</div>}
+        {transactions && (
+          <div>
+            <h2>Transactions</h2>
+            <ul>
+              {transactions.map((transaction) => (
+                <li key={transaction.id}>
+                  {transaction.text} - {transaction.amount}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </SectionContainer>
       <SectionContainer sectionNameId="hello">
         <SplitContainer
