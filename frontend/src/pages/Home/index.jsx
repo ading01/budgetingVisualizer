@@ -2,11 +2,12 @@ import { MyAreaChart } from "../../components/myAreaChart/myAreaChart";
 import SectionContainer from "../../components/SectionContainer";
 import SplitContainer from "../../components/SplitContainer";
 import styled from "styled-components";
-import { GridExample } from "../../components/Table";
+import GridExample from "../../components/Table";
 import { Input, InputLabel } from "../../ui/input";
 import { Button } from "../../ui/button";
 import HorizontalInput from "../../components/Input/HorizontalInput";
 import { useTransactions } from "../../contexts/TransactionsContext";
+import React, { useMemo } from "react";
 
 // import {Column}
 
@@ -18,6 +19,14 @@ const HomeContainer = styled.div`
 function Home() {
   const { transactions, isLoading, error } = useTransactions();
 
+  const incomeTransactions = useMemo(() => {
+    return transactions.filter((transaction) => transaction.type === "INCOME");
+  }, [transactions]);
+
+  const expenseTransactions = useMemo(() => {
+    return transactions.filter((transaction) => transaction.type === "EXPENSE");
+  }, [transactions]);
+
   return (
     <HomeContainer>
       <SectionContainer sectionNameId="inputs">
@@ -28,28 +37,14 @@ function Home() {
       </SectionContainer>
       <SectionContainer sectionNameId="hello">
         <SplitContainer
-          section_name="Skills"
-          resume_content={<GridExample />}
+          section_name="Income"
+          resume_content={<GridExample data={incomeTransactions} />}
         />
-        {isLoading && <div>Loading...</div>}
-        {error && <div>Error: {error}</div>}
-        {transactions && (
-          <div>
-            <h2>Transactions</h2>
-            <ul>
-              {transactions.map((transaction) => (
-                <li key={transaction.id}>
-                  {transaction.text} - {transaction.amount}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
       </SectionContainer>
       <SectionContainer sectionNameId="hello">
         <SplitContainer
-          section_name="Skills"
-          resume_content={<GridExample />}
+          section_name="Expenses"
+          resume_content={<GridExample data={expenseTransactions} />}
         />
       </SectionContainer>
     </HomeContainer>

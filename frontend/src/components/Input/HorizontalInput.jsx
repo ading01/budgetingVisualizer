@@ -85,9 +85,18 @@ const InputContainer = styled(Row)`
 
 // private String description;
 function HorizontalInput({ label, ...props }) {
-  const [expenseValue, setExpenseValue] = useState(""); // State to hold the current value of the input field
   const [income, setIncome] = useState({
     type: "INCOME",
+    // Ensure the date is a Date object
+    date: new Date(),
+    amount: null,
+    category: "",
+    subcategory: "",
+    userId: 1,
+    description: "",
+  });
+  const [expense, setExpense] = useState({
+    type: "EXPENSE",
     // Ensure the date is a Date object
     date: new Date(),
     amount: null,
@@ -99,14 +108,6 @@ function HorizontalInput({ label, ...props }) {
   const [incomes, setIncomes] = useState([]);
   const [expenses, setExpenses] = useState([]);
 
-  const handleAddExpense = () => {
-    if (expenseValue.trim() !== "") {
-      // Check if input value is not empty
-      setExpenses((prevExpenses) => [...prevExpenses, expenseValue]); // Add the input value to the incomes array
-      setExpenseValue(""); // Clear the input field after adding income
-    }
-  };
-
   const handleAddIncome = () => {
     if (income.amount && income.category && income.subcategory) {
       // Check if input value is not empty
@@ -114,14 +115,29 @@ function HorizontalInput({ label, ...props }) {
     }
   };
 
-  const onFormChange = (e) => {
+  const handleAddExpense = () => {
+    if (expense.amount && expense.category && expense.subcategory) {
+      // Check if input value is not empty
+      setExpenses((prevExpenses) => [...prevExpenses, expense]); // Add the input value to the expenses array
+    }
+  };
+
+  const onIncomeFormChange = (e) => {
     setIncome({ ...income, [e.target.name]: e.target.value });
+  };
+
+  const onExpenseFormChange = (e) => {
+    setExpense({ ...expense, [e.target.name]: e.target.value });
+  };
+
+  const handleIncomeDateChange = (date) => {
+    setIncome({ ...income, date: date });
     console.log(income);
   };
 
-  const handleDateChange = (date) => {
-    setIncome({ ...income, date: date });
-    console.log(income);
+  const handleExpenseDateChange = (date) => {
+    setExpense({ ...expense, date: date });
+    console.log(expense);
   };
 
   const formatForBackend = (date) => {
@@ -174,22 +190,30 @@ function HorizontalInput({ label, ...props }) {
         <GlobalStyles />
         <Calendar
           value={income.date}
-          onChange={(e) => handleDateChange(e.value)}
+          onChange={(e) => handleIncomeDateChange(e.value)}
           dateFormat="mm/dd/yy"
           placeholder="Date"
         />
 
-        <Input name="amount" placeholder="Amount" onChange={onFormChange} />
-        <Input name="category" placeholder="Category" onChange={onFormChange} />
+        <Input
+          name="amount"
+          placeholder="Amount"
+          onChange={onIncomeFormChange}
+        />
+        <Input
+          name="category"
+          placeholder="Category"
+          onChange={onIncomeFormChange}
+        />
         <Input
           name="subcategory"
           placeholder="Subcategory"
-          onChange={onFormChange}
+          onChange={onIncomeFormChange}
         />
         <Input
           name="description"
           placeholder="Description"
-          onChange={onFormChange}
+          onChange={onIncomeFormChange}
         />
         <Button onClick={handleAddIncome}>Add income</Button>
       </InputContainer>
@@ -208,23 +232,50 @@ function HorizontalInput({ label, ...props }) {
         ))}
       </Column>
       <InputContainer>
-        {/* <InputLabel>Add expense</InputLabel> */}
+        <Calendar
+          value={expense.date}
+          onChange={(e) => handleExpenseDateChange(e.value)}
+          dateFormat="mm/dd/yy"
+          placeholder="Date"
+        />
         <Input
-          {...props}
-          name="expense-input"
-          value={expenseValue}
-          onChange={(e) => setExpenseValue(e.target.value)}
+          name="amount"
+          placeholder="Amount"
+          onChange={onExpenseFormChange}
+        />
+        <Input
+          name="category"
+          placeholder="Category"
+          onChange={onExpenseFormChange}
+        />
+        <Input
+          name="subcategory"
+          placeholder="Subcategory"
+          onChange={onExpenseFormChange}
+        />
+        <Input
+          name="description"
+          placeholder="Description"
+          onChange={onExpenseFormChange}
         />
         <Button onClick={handleAddExpense}>Add expense</Button>
       </InputContainer>
+
       <Column>
-        {[...expenses].reverse().map((expense, index) => (
+        {expenses.reverse().map((expense, index) => (
+          // Using a reversed copy of expenses to display them in reverse order
           // The `key` should ideally be something unique other than `index` if possible
           <Column key={index}>
-            <p>{expense}</p>
+            <Row style={{ display: "flex", gap: "16px" }}>
+              <p>{formatForDisplay(expense.date)}</p>
+              <p>{expense.amount}</p>
+              <p>{expense.category}</p>
+              <p>{expense.subcategory}</p>
+            </Row>
           </Column>
         ))}
       </Column>
+
       <Button onClick={handleSubmitTransactions}>Submit Transactions</Button>
     </div>
   );
