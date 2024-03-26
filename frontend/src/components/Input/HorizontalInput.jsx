@@ -88,7 +88,7 @@ function HorizontalInput({ label, ...props }) {
   const [income, setIncome] = useState({
     type: "INCOME",
     // Ensure the date is a Date object
-    date: new Date(),
+    date: null,
     amount: null,
     category: "",
     subcategory: "",
@@ -98,7 +98,7 @@ function HorizontalInput({ label, ...props }) {
   const [expense, setExpense] = useState({
     type: "EXPENSE",
     // Ensure the date is a Date object
-    date: new Date(),
+    date: null,
     amount: null,
     category: "",
     subcategory: "",
