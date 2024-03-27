@@ -24,28 +24,25 @@ import { LineChart } from "@mui/x-charts/LineChart";
 // ];
 
 const chartData = [
-  { month: "January", income: 1200, expenses: 1100 },
-  { month: "February", income: 1500, expenses: 1200 },
-  { month: "March", income: 1800, expenses: 1300 },
-  { month: "April", income: 1600, expenses: 1450 },
-  { month: "May", income: 2000, expenses: 1500 },
-  { month: "June", income: 1700, expenses: 1600 },
-  { month: "July", income: 2100, expenses: 1650 },
-  { month: "August", income: 1900, expenses: 1700 },
-  { month: "September", income: 2200, expenses: 1750 },
-  { month: "October", income: 2300, expenses: 1800 },
-  { month: "November", income: 2400, expenses: 1850 },
-  { month: "December", income: 2500, expenses: 1900 },
+  { month: "January", year: 2023, income: 1200, expenses: 1100 },
+  { month: "February", year: 2023, income: 1500, expenses: 1200 },
+  { month: "March", year: 2023, income: 1800, expenses: 1300 },
+  { month: "April", year: 2023, income: 1600, expenses: 1450 },
+  { month: "May", year: 2023, income: 2000, expenses: 1500 },
+  { month: "June", year: 2023, income: 1700, expenses: 1600 },
+  { month: "July", year: 2023, income: 2100, expenses: 1650 },
+  { month: "August", year: 2023, income: 1900, expenses: 1700 },
+  { month: "September", year: 2023, income: 2200, expenses: 1750 },
+  { month: "October", year: 2023, income: 2300, expenses: 1800 },
+  { month: "November", year: 2023, income: 2400, expenses: 1850 },
+  { month: "December", year: 2023, income: 2500, expenses: 1900 },
 ];
-
 export function MonthlyLineDataset({ chartData }) {
-  const valueFormatter = (value) => `${value}mm`;
+  const valueFormatter = (value) => `$${value}`;
   const colors = {
-    income: "#fab856",
-    expenses: "lightblue",
-  };
-  const stackStrategy = {
-    stackOffset: "none",
+    income: "#1cb700",
+    expenses: "#ff0000",
+    savings: "rgba(72, 238, 46, 0.68)",
   };
 
   return (
@@ -56,10 +53,14 @@ export function MonthlyLineDataset({ chartData }) {
         {
           scaleType: "point",
           dataKey: "month",
-          valueFormatter: (month, context) =>
-            context.location === "tick"
-              ? `${month.slice(0, 3)} \n2023`
-              : `${month} 2023`,
+          valueFormatter: (month, context) => {
+            // Find the year for the current month from chartData
+            const year =
+              chartData.find((data) => data.month === month)?.year || "Year";
+            return context.location === "tick"
+              ? `${month.slice(0, 3)} \n${year}` // Use the dynamically found year here
+              : `${month} ${year}`;
+          },
         },
       ]}
       series={[
@@ -68,14 +69,19 @@ export function MonthlyLineDataset({ chartData }) {
           label: "Income",
           color: colors.income,
           valueFormatter,
-          ...stackStrategy,
         },
         {
           dataKey: "expenses",
           label: "Expenses",
           color: colors.expenses,
           valueFormatter,
-          ...stackStrategy,
+        },
+        {
+          dataKey: "savings",
+          label: "Savings",
+          color: colors.savings,
+          // area: true,
+          valueFormatter,
         },
       ]}
       width={800}
@@ -161,49 +167,56 @@ function Home() {
     // Your code here will run once, after the initial render
     populateMonthTransactions(6);
     populateChartData(6);
-  }, []); // Empty dependency array means this runs on mount only
+  }, [transactions]); // Empty dependency array means this runs on mount only
+
+  function processTransactions(transactions) {
+    const transactionSummary = {};
+
+    transactions.forEach((transaction) => {
+      const date = new Date(transaction.date);
+      const year = date.getFullYear();
+      const month = date.toLocaleString("default", { month: "long" });
+      const key = `${month} ${year}`;
+
+      if (!transactionSummary[key]) {
+        transactionSummary[key] = {
+          month,
+          year,
+          income: 0,
+          expenses: 0,
+          savings: 0,
+        };
+      }
+
+      if (transaction.type === "INCOME") {
+        transactionSummary[key].income += transaction.amount;
+        transactionSummary[key].savings += transaction.amount;
+      } else if (transaction.type === "EXPENSE") {
+        transactionSummary[key].expenses += transaction.amount;
+        transactionSummary[key].savings -= transaction.amount;
+      }
+    });
+
+    // Convert the summary object into an array of values
+    return Object.values(transactionSummary).sort((a, b) => {
+      return (
+        new Date(
+          a.year,
+          new Date(Date.parse(`${a.month} 1, ${a.year}`)).getMonth()
+        ) -
+        new Date(
+          b.year,
+          new Date(Date.parse(`${b.month} 1, ${b.year}`)).getMonth()
+        )
+      );
+    });
+  }
 
   const populateChartData = (monthsRequested) => {
-    const currentDate = new Date();
-    const currentMonth = currentDate.getMonth(); // Get the current month (0-indexed)
-    const currentYear = currentDate.getFullYear(); // Get the current year
-
-    const months = [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December",
-    ];
-
-    const data = [];
-
-    // Loop through each month prior to the current month
-    for (let i = 0; i < monthsRequested; i++) {
-      // Calculate the month and year for the current iteration
-      const monthIndex = (currentMonth - i + 12) % 12; // Handle wrapping around for previous years
-      const year = currentYear - Math.floor((currentMonth - i) / 12);
-
-      // Prepare the data for the current month
-      const monthData = {
-        month: months[monthIndex],
-        income: Math.random() * 1000, // Placeholder values
-        expenses: Math.random() * 1000, // Placeholder values
-      };
-
-      // Push the data for the current month to the array
-      data.push(monthData);
-    }
+    console.log("processed transactions", processTransactions(transactions));
 
     // Reverse the data array so that the most recent month is first
-    setChartData(data.reverse());
+    setChartData(processTransactions(transactions));
   };
 
   const populateMonthTransactions = (monthsRequested) => {
@@ -282,29 +295,29 @@ function Home() {
   //   ],
   // };
 
-  const chartOptions = {
-    plugins: {
-      legend: {
-        display: true,
-        position: "top",
-      },
-      title: {
-        display: true,
-        text: "Monthly Income and Expenses",
-      },
-    },
-    scales: {
-      y: {
-        beginAtZero: true,
-        title: {
-          display: true,
-          text: "Amount ($)",
-        },
-      },
-    },
-    responsive: true,
-    maintainAspectRatio: true,
-  };
+  // const chartOptions = {
+  //   plugins: {
+  //     legend: {
+  //       display: true,
+  //       position: "top",
+  //     },
+  //     title: {
+  //       display: true,
+  //       text: "Monthly Income and Expenses",
+  //     },
+  //   },
+  //   scales: {
+  //     y: {
+  //       beginAtZero: true,
+  //       title: {
+  //         display: true,
+  //         text: "Amount ($)",
+  //       },
+  //     },
+  //   },
+  //   responsive: true,
+  //   maintainAspectRatio: true,
+  // };
 
   return (
     <HomeContainer>
@@ -314,7 +327,7 @@ function Home() {
       <SectionContainer sectionNameId="hello">
         <div style={{ width: "800px", height: "800px" }}>
           {/* <Chart type="line" data={chartData} options={chartOptions} /> */}
-          <MonthlyLineDataset chartData={chartData} />
+          <MonthlyLineDataset chartData={newChartData} />
         </div>
         {/* <LineDataset /> */}
         {/* <BasicArea /> */}
