@@ -30,6 +30,13 @@ public class TransactionService {
 
     }
 
+    public void deleteTransaction(Long transactionId) {
+        // Here you would check if the transaction exists, and if so, delete it.
+        // For example:
+        transactionRepository.deleteById(transactionId);
+    }
+
+
     // Add more methods as needed, such as getById, delete, update, etc.
 }
 

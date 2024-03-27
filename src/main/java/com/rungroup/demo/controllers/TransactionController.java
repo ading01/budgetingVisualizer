@@ -44,6 +44,14 @@ public class TransactionController {
         return new ResponseEntity<>(transactionDTOs, HttpStatus.OK);
     }
 
+    @DeleteMapping("/{transactionId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT) // This sets the HTTP status code to 204 No Content upon successful deletion.
+    public void deleteTransaction(@PathVariable Long transactionId) {
+        // Call the delete method from the transaction service
+        // You need to implement this method in your TransactionService class
+        transactionService.deleteTransaction(transactionId);
+    }
+
     @PostMapping
     public ResponseEntity<Transaction> createTransaction(@RequestBody TransactionDTO transactionDTO) {
         // Convert TransactionDTO to Transaction entity
